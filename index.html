@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROBLOX GAME IDEA LAB</title>
+<style>
+  :root{
+    --bg1: #05060d;
+    --bg2: #0b0f24;
+    --panel: rgba(255,255,255,0.05);
+    --panel-border: rgba(255,255,255,0.12);
+    --accent: #00f0ff;
+    --accent2: #b84dff;
+    --accent3: #ff5ec4;
+    --text: #eaf2ff;
+    --text-dim: #9db0d6;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{ margin:0; padding:0; }
+
+  body{
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(0,240,255,0.12), transparent 35%),
+      radial-gradient(circle at 85% 0%, rgba(184,77,255,0.14), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(255,94,196,0.08), transparent 45%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    background-attachment: fixed;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .grid-bg{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at 50% 30%, black, transparent 75%);
+    pointer-events: none;
+  }
+
+  .app{
+    position: relative;
+    z-index: 2;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 30px 18px 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+
+  .brand .dot{
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 14px var(--accent), 0 0 24px var(--accent2);
+    animation: pulseDot 2s infinite ease-in-out;
+  }
+  @keyframes pulseDot{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.3);} }
+
+  .brand-name span{
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .topbar-actions{ display:flex; gap:8px; }
+
+  /* ---------- Screens ---------- */
+  .screen{ display:none; flex: 1; }
+  .screen.active{ display:flex; flex-direction: column; animation: screenIn 0.5s ease; }
+
+  @keyframes screenIn{
+    from{ opacity:0; transform: translateY(18px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* ---------- Intro ---------- */
+  #screen-intro{ align-items: center; text-align:center; justify-content:center; padding: 40px 0 20px; }
+
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 22px;
+    backdrop-filter: blur(6px);
+  }
+  .badge .live{ width:7px; height:7px; border-radius:50%; background:#5cff8f; box-shadow:0 0 8px #5cff8f; animation: pulseDot 1.5s infinite; }
+
+  h1.hero{
+    font-size: clamp(2.3rem, 7vw, 4.3rem);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    font-weight: 900;
+    background: linear-gradient(100deg, #fff, var(--accent) 45%, var(--accent2) 75%, var(--accent3));
+    background-size: 250% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine{ to{ background-position: 250% center; } }
+
+  .hero-sub{
+    font-size: clamp(1.05rem, 3vw, 1.4rem);
+    color: #cfe0ff;
+    max-width: 620px;
+    margin: 0 auto 10px;
+    font-weight: 600;
+  }
+
+  .hero-small{
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto 34px;
+  }
+
+  .cta-row{ display:flex; gap: 14px; flex-wrap: wrap; justify-content:center; }
+
+  .stats-row{
+    display:flex; gap: 34px; flex-wrap:wrap; justify-content:center;
+    margin-top: 46px;
+    padding-top: 30px;
+    border-top: 1px solid var(--panel-border);
+    width: 100%;
+  }
+  .stat{ text-align:center; }
+  .stat b{ display:block; font-size:1.6rem; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat span{ font-size:0.78rem; color:var(--text-dim); }
+
+  /* ---------- Buttons ---------- */
+  button{
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 13px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    backdrop-filter: blur(6px);
+  }
+  button:hover{ transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,240,255,0.15); }
+  button:active{ transform: translateY(0); }
+
+  .btn-primary{
+    background: linear-gradient(135deg, var(--accent), #4de1ff);
+    color: #001018;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,240,255,0.25);
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 16px 30px;
+  }
+  .btn-primary:hover{ box-shadow: 0 0 30px rgba(0,240,255,0.55), 0 14px 34px rgba(0,240,255,0.3); transform: translateY(-3px) scale(1.02); }
+
+  .btn-magic{
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    color: #100016;
+    font-weight: 800;
+    box-shadow: 0 10px 30px rgba(184,77,255,0.25);
+  }
+  .btn-magic:hover{ box-shadow: 0 0 30px rgba(255,94,196,0.5); }
+
+  .btn-ghost{ background: transparent; }
+  .btn-small{ padding: 9px 14px; font-size: 0.82rem; border-radius: 10px; }
+
+  /* ---------- Wizard ---------- */
+  #screen-wizard{ padding-top: 6px; }
+
+  .progress-wrap{ margin-bottom: 28px; }
+  .progress-label{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size: 0.78rem; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 8px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .progress-label b{ color: var(--accent); }
+  .progress-track{
+    height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08);
+    overflow:hidden; border: 1px solid var(--panel-border);
+  }
+  .progress-fill{
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    background-size: 200% auto;
+    width: 8%;
+    transition: width 0.5s cubic-bezier(.4,1.4,.6,1);
+    animation: shine 3s linear infinite;
+  }
+
+  .crumbs{
+    display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 22px;
+  }
+  .crumb{
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+  }
+
+  .question{
+    font-size: clamp(1.3rem, 4vw, 1.9rem);
+    font-weight: 800;
+    margin: 0 0 22px;
+    animation: fadeUp 0.5s ease;
+  }
+  @keyframes fadeUp{ from{ opacity:0; transform: translateY(14px);} to{ opacity:1; transform:translateY(0);} }
+
+  .options-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .opt-card{
+    position: relative;
+    text-align: left;
+    padding: 20px 16px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px);
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.98rem;
+    display:flex; flex-direction:column; gap:10px;
+    animation: cardIn 0.4s ease backwards;
+    overflow: hidden;
+  }
+  .opt-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(0,240,255,0.0), rgba(184,77,255,0.0));
+    transition: background 0.25s ease;
+    z-index: -1;
+  }
+  .opt-card:hover{
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(0,240,255,0.18);
+  }
+  .opt-card:hover::before{ background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(184,77,255,0.12)); }
+  .opt-card:active{ transform: translateY(-1px) scale(0.98); }
+
+  .opt-emoji{ font-size: 1.8rem; }
+  .opt-label{ line-height: 1.25; }
+
+  @keyframes cardIn{ from{ opacity:0; transform: translateY(16px) scale(0.96); } to{ opacity:1; transform: translateY(0) scale(1);} }
+
+  .wizard-footer{
+    display:flex; justify-content: space-between; align-items:center; gap: 10px; margin-top:auto; flex-wrap: wrap;
+  }
+
+  /* ---------- Result ---------- */
+  .result-hero{ text-align:center; margin-bottom: 26px; }
+  .result-hero h2{
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    margin: 0 0 8px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent2), var(--accent));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .result-hero p{ color: var(--text-dim); margin:0; }
+
+  .panel{
+    background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 22px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 20px;
+  }
+
+  .panel h3{
+    margin: 0 0 14px;
+    font-size: 1.05rem;
+    display:flex; align-items:center; gap:8px;
+  }
+
+  .summary-list{ display:flex; flex-direction:column; gap:10px; }
+  .summary-item{
+    display:flex; justify-content:space-between; gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .summary-item .q{ color: var(--text-dim); }
+  .summary-item .a{ font-weight: 700; color: var(--accent); text-align:right; }
+
+  .concept-text{
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #e6eeff;
+  }
+
+  .result-actions{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top: 6px; }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position: fixed;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #000;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    white-space: nowrap;
+  }
+  .toast.show{ opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Credits ---------- */
+  footer.credits{
+    margin-top: 40px;
+    text-align: center;
+    padding-top: 22px;
+    border-top: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    line-height: 1.8;
+  }
+  footer.credits b{ color: var(--text); }
+  footer.credits .made{
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    font-weight: 800;
+  }
+
+  @media (max-width: 560px){
+    .topbar{ flex-direction: column; align-items: flex-start; }
+    .options-grid{ grid-template-columns: 1fr 1fr; }
+    .cta-row{ flex-direction: column; width: 100%; }
+    .cta-row button{ width: 100%; }
+    .wizard-footer{ flex-direction: column-reverse; }
+    .wizard-footer > div{ width:100%; display:flex; gap:8px; }
+    .wizard-footer button{ flex:1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div class="brand-name"><span>ROBLOX GAME IDEA LAB</span></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-ghost btn-small" id="btnResetTop">🔄 Reiniciar</button>
+    </div>
+  </div>
+
+  <!-- ===================== INTRO ===================== -->
+  <section class="screen active" id="screen-intro">
+    <div class="badge"><span class="live"></span> Herramienta activa para Roblox Developers</div>
+    <h1 class="hero">Ideas para tu juego.</h1>
+    <p class="hero-sub">Construye tu próximo juego famoso de Roblox.</p>
+    <p class="hero-small">¿Sin ideas? Déjanos ayudarte a construir el concepto de tu próximo juego paso a paso.</p>
+
+    <div class="cta-row">
+      <button class="btn-primary" id="btnEmpezar">🚀 EMPEZAR</button>
+      <button class="btn-magic" id="btnSorpresa">🎲 SORPRÉNDEME</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><b>14</b><span>géneros disponibles</span></div>
+      <div class="stat"><b>100+</b><span>combinaciones posibles</span></div>
+      <div class="stat"><b>0</b><span>líneas de código necesarias</span></div>
+    </div>
+  </section>
+
+  <!-- ===================== WIZARD ===================== -->
+  <section class="screen" id="screen-wizard">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>PASO <b id="stepCurrent">1</b> / <span id="stepTotal">?</span></span><span id="stepPercent">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="crumbs" id="crumbs"></div>
+
+    <h2 class="question" id="questionText">Cargando...</h2>
+    <div class="options-grid" id="optionsGrid"></div>
+
+    <div class="wizard-footer">
+      <button class="btn-ghost btn-small" id="btnAtras">← ATRÁS</button>
+      <div>
+        <button class="btn-ghost btn-small" id="btnReiniciarWizard">🔄 Reiniciar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESULT ===================== -->
+  <section class="screen" id="screen-result">
+    <div class="result-hero">
+      <h2>🎉 ¡TU JUEGO ESTÁ LISTO!</h2>
+      <p>Aquí está el concepto completo, generado a partir de tus decisiones.</p>
+    </div>
+
+    <div class="panel">
+      <h3>📋 Resumen de decisiones</h3>
+      <div class="summary-list" id="summaryList"></div>
+    </div>
+
+    <div class="panel">
+      <h3>💡 Concepto de tu juego</h3>
+      <p class="concept-text" id="conceptText"></p>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-primary btn-small" id="btnCopiar">📋 COPIAR</button>
+      <button class="btn-magic btn-small" id="btnDescargar">📄 DESCARGAR</button>
+      <button class="btn-ghost btn-small" id="btnOtroJuego">🔄 CREAR OTRO JUEGO</button>
+    </div>
+  </section>
+
+  <footer class="credits">
+    <div class="made">ROBLOX GAME IDEA LAB</div>
+    Hecho por: <b>@kawasakii</b> en TikTok · <b>bloxguy_TK</b> en YouTube · Discord: <b>kawasakii</b>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   ROBLOX GAME IDEA LAB — motor de árbol de decisiones
+   Estructura de nodo: { question, options: [{id,label,emoji,node?}] }
+   Si una opción no tiene "node", se considera hoja: al elegirla
+   se pasa a la cadena común (estilo visual + monetización), y si
+   ya estábamos en la cadena común, se finaliza el juego.
+   ========================================================= */
+
+// ---------- Cadena común (estilo visual + monetización) ----------
+const commonMonetization = {
+  question: "¿Cómo planeas monetizar tu juego?",
+  options: [
+    { id:'gamepasses', label:'Gamepasses', emoji:'💳' },
+    { id:'robuxboost', label:'Boosts con Robux', emoji:'💎' },
+    { id:'battlepass', label:'Battle Pass / Season Pass', emoji:'🎫' },
+    { id:'adsrewards', label:'Anuncios por recompensas', emoji:'📺' },
+    { id:'cosmetic', label:'Solo cosméticos', emoji:'👕' }
+  ]
+};
+
+const commonStyle = {
+  question: "¿Qué estilo visual tendrá tu juego?",
+  options: [
+    { id:'lowpoly', label:'Low-poly tierno', emoji:'🟢', node: commonMonetization },
+    { id:'realista', label:'Realista y oscuro', emoji:'🌑', node: commonMonetization },
+    { id:'cartoon', label:'Cartoon colorido', emoji:'🌈', node: commonMonetization },
+    { id:'minimal', label:'Minimalista', emoji:'⚪', node: commonMonetization },
+    { id:'retro', label:'Pixelado retro', emoji:'👾', node: commonMonetization }
+  ]
+};
+
+// ---------- Helper para categorías con 2 pasos lineales ----------
+function simpleCategory(q1, opts1, q2, opts2){
+  const node2 = { question: q2, options: opts2 };
+  return { question: q1, options: opts1.map(o => Object.assign({}, o, { node: node2 })) };
+}
+
+// ---------- OBBY (árbol ramificado de ejemplo) ----------
+const obbyEtapas = {
+  question: "¿Cómo quieres que funcionen las etapas?",
+  options: [
+    { id:'auto', label:'Checkpoints automáticos', emoji:'⚡' },
+    { id:'manual', label:'Checkpoints manuales', emoji:'🖐️' },
+    { id:'mundos', label:'Diferentes mundos', emoji:'🌍' },
+    { id:'dificultad', label:'Dificultad progresiva', emoji:'📈' },
+    { id:'recompensaetapa', label:'Recompensa por completar etapa', emoji:'🎉' }
+  ]
+};
+const obbyRoot = {
+  question: "¿Qué sistemas quieres en tu Obby?",
+  options: [
+    { id:'etapas', label:'Sistema de etapas', emoji:'🏁', node: obbyEtapas },
+    { id:'guardado', label:'Guardado de progreso', emoji:'💾' },
+    { id:'victorias', label:'Sistema de victorias', emoji:'🏆' },
+    { id:'cronometro', label:'Cronómetro', emoji:'⏱️' },
+    { id:'velocidad', label:'Sistema de velocidad', emoji:'🏃' },
+    { id:'checkpoints', label:'Checkpoints', emoji:'☠️' },
+    { id:'recompensas', label:'Recompensas', emoji:'🎁' },
+    { id:'tienda', label:'Tienda', emoji:'🛒' },
+    { id:'vip', label:'VIP', emoji:'👑' },
+    { id:'leaderboard', label:'Leaderboard', emoji:'📊' }
+  ]
+};
+
+// ---------- RNG (árbol ramificado de ejemplo) ----------
+const rngRoll = {
+  question: "¿Cómo quieres que funcione el Roll?",
+  options: [
+    { id:'rollauto', label:'Roll automático', emoji:'⚡' },
+    { id:'rollmanual', label:'Roll manual', emoji:'🖱️' },
+    { id:'cooldown', label:'Cooldown', emoji:'⏳' },
+    { id:'multiplicador', label:'Multiplicador de suerte', emoji:'✖️' },
+    { id:'x10', label:'Roll x10', emoji:'🔟' },
+    { id:'x100', label:'Roll x100', emoji:'💯' }
+  ]
+};
+const rngAnimacion = {
+  question: "¿Cómo quieres la animación de Roll?",
+  options: [
+    { id:'animrapida', label:'Animación rápida', emoji:'⚡' },
+    { id:'animcine', label:'Animación cinematográfica', emoji:'🎬' },
+    { id:'pantallarareza', label:'Pantalla de rareza', emoji:'🖼️' },
+    { id:'particulas', label:'Efectos de partículas', emoji:'✨' },
+    { id:'sonidos', label:'Sonidos según rareza', emoji:'🔊' }
+  ]
+};
+const rngRoot = {
+  question: "¿Qué quieres que tenga tu RNG?",
+  options: [
+    { id:'roll', label:'Sistema de Roll', emoji:'🎰', node: rngRoll },
+    { id:'animacion', label:'Animación de Roll', emoji:'✨', node: rngAnimacion },
+    { id:'inventario', label:'Inventario', emoji:'🎒' },
+    { id:'rarezas', label:'Rarezas', emoji:'💎' },
+    { id:'auras', label:'Auras', emoji:'🌈' },
+    { id:'leaderboard', label:'Leaderboard', emoji:'🏆' },
+    { id:'monedas', label:'Monedas', emoji:'💰' },
+    { id:'shop', label:'Shop', emoji:'🛒' },
+    { id:'recompensas', label:'Recompensas', emoji:'🎁' },
+    { id:'luck', label:'Luck System', emoji:'🔥' }
+  ]
+};
+
+// ---------- Resto de categorías (cadenas de 2 pasos) ----------
+const funnyRoot = simpleCategory(
+  "¿Qué tipo de humor tendrá tu juego?",
+  [
+    { id:'fisico', label:'Físico caótico', emoji:'🤪' },
+    { id:'viral', label:'Referencias virales', emoji:'📱' },
+    { id:'absurdo', label:'Absurdo random', emoji:'🎭' },
+    { id:'rage', label:'Rage game gracioso', emoji:'😤' },
+    { id:'ridiculo', label:'Simulador ridículo', emoji:'🐔' }
+  ],
+  "¿Qué mecánica cómica quieres agregar?",
+  [
+    { id:'ragdoll', label:'Ragdoll físico', emoji:'🦴' },
+    { id:'sonidosrandom', label:'Efectos de sonido random', emoji:'🔊' },
+    { id:'transformaciones', label:'Transformaciones random', emoji:'🔄' },
+    { id:'minisurdos', label:'Minijuegos absurdos', emoji:'🎪' },
+    { id:'trolls', label:'Trolls entre jugadores', emoji:'😈' }
+  ]
+);
+
+const tycoonRoot = simpleCategory(
+  "¿Cómo será la base de tu Tycoon?",
+  [
+    { id:'basepersonal', label:'Base personal', emoji:'🏠' },
+    { id:'basecompartida', label:'Base compartida', emoji:'🤝' },
+    { id:'baseisla', label:'Base en isla', emoji:'🏝️' },
+    { id:'basesub', label:'Base subterránea', emoji:'🕳️' },
+    { id:'basefuturista', label:'Base futurista', emoji:'🚀' }
+  ],
+  "¿Qué sistema de progreso quieres?",
+  [
+    { id:'botones', label:'Botones de dinero', emoji:'🔘' },
+    { id:'workers', label:'Workers automáticos', emoji:'👷' },
+    { id:'upgrades', label:'Upgrades de producción', emoji:'⚙️' },
+    { id:'rebirth', label:'Rebirth / Prestige', emoji:'🔁' },
+    { id:'dropper', label:'Dropper de items', emoji:'📦' }
+  ]
+);
+
+const battleRoyaleRoot = simpleCategory(
+  "¿Cómo será el inicio de la partida?",
+  [
+    { id:'lobbyvotacion', label:'Lobby con votación', emoji:'🗳️' },
+    { id:'paracaidas', label:'Caída en paracaídas', emoji:'🪂' },
+    { id:'spawnaleatorio', label:'Spawn aleatorio', emoji:'📍' },
+    { id:'zonasegura', label:'Zona segura inicial', emoji:'🛡️' }
+  ],
+  "¿Qué sistema de combate quieres?",
+  [
+    { id:'lootmapa', label:'Loot en el mapa', emoji:'🎒' },
+    { id:'armasbalanceadas', label:'Armas balanceadas', emoji:'⚔️' },
+    { id:'zonareduce', label:'Zona que se reduce', emoji:'🌀' },
+    { id:'habilidades', label:'Habilidades especiales', emoji:'✨' },
+    { id:'vehiculos', label:'Vehículos', emoji:'🚗' }
+  ]
+);
+
+const horrorRoot = simpleCategory(
+  "¿Qué tipo de monstruo perseguirá al jugador?",
+  [
+    { id:'invisible', label:'Entidad invisible', emoji:'👻' },
+    { id:'iaagresiva', label:'Monstruo con IA agresiva', emoji:'🧟' },
+    { id:'escuchaido', label:'Criatura que escucha ruido', emoji:'👂' },
+    { id:'multienemigos', label:'Múltiples enemigos', emoji:'🕷️' }
+  ],
+  "¿Qué mecánica de terror quieres?",
+  [
+    { id:'jumpscares', label:'Jumpscares', emoji:'😱' },
+    { id:'sigilo', label:'Sistema de sigilo', emoji:'🤫' },
+    { id:'linterna', label:'Linterna con batería', emoji:'🔦' },
+    { id:'presion', label:'Objetivos bajo presión', emoji:'⏳' },
+    { id:'muertepermanente', label:'Muerte permanente', emoji:'💀' }
+  ]
+);
+
+const survivalRoot = simpleCategory(
+  "¿Qué deberá sobrevivir el jugador?",
+  [
+    { id:'hambresed', label:'Hambre y sed', emoji:'🍖' },
+    { id:'climaextremo', label:'Clima extremo', emoji:'🌪️' },
+    { id:'zombies', label:'Zombies / monstruos', emoji:'🧟' },
+    { id:'otrosjugadores', label:'Otros jugadores', emoji:'🗡️' }
+  ],
+  "¿Qué sistema de supervivencia quieres?",
+  [
+    { id:'crafting', label:'Crafting de items', emoji:'🔨' },
+    { id:'construccion', label:'Construcción de base', emoji:'🏚️' },
+    { id:'recoleccion', label:'Recolección de recursos', emoji:'🪵' },
+    { id:'hambresalud', label:'Sistema de hambre/salud', emoji:'❤️' },
+    { id:'diaynoche', label:'Día y noche dinámico', emoji:'🌙' }
+  ]
+);
+
+const fightingRoot = simpleCategory(
+  "¿Qué estilo de combate tendrá tu juego?",
+  [
+    { id:'comboanime', label:'Combos estilo anime', emoji:'🥋' },
+    { id:'realista2', label:'Combate realista', emoji:'🥊' },
+    { id:'poderes', label:'Combate con poderes', emoji:'⚡' },
+    { id:'equipos', label:'Combate por equipos', emoji:'👥' }
+  ],
+  "¿Qué sistema quieres agregar?",
+  [
+    { id:'arbolcombos', label:'Árbol de combos', emoji:'🌳' },
+    { id:'stamina', label:'Sistema de stamina', emoji:'🔋' },
+    { id:'ranked', label:'Ranked / Elo', emoji:'🏅' },
+    { id:'personajes', label:'Personajes desbloqueables', emoji:'🔓' },
+    { id:'arenasdestructibles', label:'Arenas destructibles', emoji:'💥' }
+  ]
+);
+
+const adventureRoot = simpleCategory(
+  "¿Qué tipo de mundo explorará el jugador?",
+  [
+    { id:'mundoabierto', label:'Mundo abierto', emoji:'🗺️' },
+    { id:'islasconectadas', label:'Islas conectadas', emoji:'🏝️' },
+    { id:'mazmorras', label:'Mazmorras', emoji:'🏰' },
+    { id:'mundomagico', label:'Mundo mágico', emoji:'✨' }
+  ],
+  "¿Qué sistema de exploración quieres?",
+  [
+    { id:'misiones', label:'Misiones y NPCs', emoji:'🧙' },
+    { id:'cofres', label:'Cofres escondidos', emoji:'📦' },
+    { id:'niveles', label:'Sistema de niveles', emoji:'⭐' },
+    { id:'companeros', label:'Compañeros / mascotas', emoji:'🐾' },
+    { id:'portales', label:'Portales entre mundos', emoji:'🌀' }
+  ]
+);
+
+const simulatorRoot = simpleCategory(
+  "¿Qué simulará tu juego?",
+  [
+    { id:'simmascotas', label:'Simulador de mascotas', emoji:'🐶' },
+    { id:'simtrabajo', label:'Simulador de trabajo', emoji:'💼' },
+    { id:'simfuerza', label:'Simulador de fuerza/poder', emoji:'💪' },
+    { id:'simgranja', label:'Simulador de granja', emoji:'🌾' }
+  ],
+  "¿Qué sistema de progresión quieres?",
+  [
+    { id:'rebirthsim', label:'Rebirth', emoji:'🔁' },
+    { id:'petsayudan', label:'Pets que ayudan', emoji:'🐾' },
+    { id:'zonasdesbloqueables', label:'Zonas desbloqueables', emoji:'🗝️' },
+    { id:'fusion', label:'Sistema de fusión', emoji:'🔗' },
+    { id:'eventos', label:'Eventos temporales', emoji:'🎊' }
+  ]
+);
+
+const minigamesRoot = simpleCategory(
+  "¿Cómo se seleccionarán los minijuegos?",
+  [
+    { id:'votacionjugadores', label:'Votación entre jugadores', emoji:'🗳️' },
+    { id:'rotacionaleatoria', label:'Rotación aleatoria', emoji:'🎲' },
+    { id:'mapatematico', label:'Mapa temático por ronda', emoji:'🗺️' },
+    { id:'elegidohost', label:'Elegido por el host', emoji:'🎤' }
+  ],
+  "¿Qué sistema de rondas quieres?",
+  [
+    { id:'puntos', label:'Puntos acumulables', emoji:'🏅' },
+    { id:'eliminacion', label:'Eliminación por ronda', emoji:'❌' },
+    { id:'tiempolimite', label:'Tiempo límite por ronda', emoji:'⏱️' },
+    { id:'powerupssorpresa', label:'Power-ups sorpresa', emoji:'🎁' },
+    { id:'rankingfinal', label:'Ranking final', emoji:'🏆' }
+  ]
+);
+
+const racingRoot = simpleCategory(
+  "¿Qué tipo de carreras tendrá tu juego?",
+  [
+    { id:'carrerasautos', label:'Carreras de autos', emoji:'🏎️' },
+    { id:'carrerasparkour', label:'Carreras a pie (parkour)', emoji:'🏃' },
+    { id:'carrerasaereas', label:'Carreras aéreas', emoji:'✈️' },
+    { id:'carrerasacuaticas', label:'Carreras acuáticas', emoji:'🚤' }
+  ],
+  "¿Qué sistema quieres agregar?",
+  [
+    { id:'mejorasvehiculo', label:'Mejoras de vehículo', emoji:'🔧' },
+    { id:'circuitos', label:'Circuitos desbloqueables', emoji:'🏁' },
+    { id:'powerupspista', label:'Power-ups en pista', emoji:'🎁' },
+    { id:'skins', label:'Skins / personalización', emoji:'🎨' },
+    { id:'contrarreloj', label:'Modo contrarreloj', emoji:'⏱️' }
+  ]
+);
+
+const puzzleRoot = simpleCategory(
+  "¿Qué tipo de puzzles tendrá tu juego?",
+  [
+    { id:'puzzlelogica', label:'Puzzles de lógica', emoji:'🧠' },
+    { id:'puzzlefisica', label:'Puzzles de física', emoji:'🧲' },
+    { id:'escaperoom', label:'Escape room', emoji:'🚪' },
+    { id:'puzzlecoop', label:'Puzzles cooperativos', emoji:'🤝' }
+  ],
+  "¿Qué sistema quieres agregar?",
+  [
+    { id:'pistas', label:'Sistema de pistas', emoji:'💡' },
+    { id:'dificultadcreciente', label:'Niveles con dificultad creciente', emoji:'📈' },
+    { id:'editorniveles', label:'Editor de niveles', emoji:'🛠️' },
+    { id:'contrarrelojpuzzle', label:'Modo contrarreloj', emoji:'⏱️' },
+    { id:'rankingtiempos', label:'Ranking de mejores tiempos', emoji:'🏆' }
+  ]
+);
+
+const dopamineRoot = simpleCategory(
+  "¿Qué tan rápido quieres que progrese el jugador?",
+  [
+    { id:'instantaneo', label:'Progreso instantáneo', emoji:'⚡' },
+    { id:'cadasegundo', label:'Progreso cada segundo', emoji:'⏱️' },
+    { id:'recompensasconstantes', label:'Recompensas constantes', emoji:'🎁' },
+    { id:'explosionvisual', label:'Explosión de efectos visuales', emoji:'🎆' }
+  ],
+  "¿Qué mecánica de dopamina quieres?",
+  [
+    { id:'sonidossatisfactorios', label:'Sonidos satisfactorios', emoji:'🔊' },
+    { id:'particulasexageradas', label:'Efectos de partículas exagerados', emoji:'✨' },
+    { id:'numeroscreciendo', label:'Números creciendo rápido', emoji:'📈' },
+    { id:'lootboxesvisuales', label:'Loot boxes visuales', emoji:'🎰' },
+    { id:'combosrecompensas', label:'Combos de recompensas', emoji:'🔥' }
+  ]
+);
+
+// ---------- Metadata para el generador de conceptos ----------
+const CATEGORY_META = {
+  obby:         { name:'Obby', descriptor:'enfocado en superar obstáculos y desafíos de plataformas' },
+  rng:          { name:'RNG', descriptor:'basado en rolls y en coleccionar objetos raros' },
+  funny:        { name:'juego de humor / meme', descriptor:'lleno de caos y momentos absurdos para hacer reír a los jugadores' },
+  tycoon:       { name:'Tycoon', descriptor:'centrado en construir y hacer crecer un imperio' },
+  battleroyale: { name:'Battle Royale', descriptor:'de combate donde solo un jugador puede ganar' },
+  horror:       { name:'juego de Horror', descriptor:'diseñado para asustar y generar tensión constante' },
+  survival:     { name:'juego de Survival', descriptor:'centrado en sobrevivir contra todo pronóstico' },
+  fighting:     { name:'juego de Fighting', descriptor:'de combate directo entre jugadores' },
+  adventure:    { name:'juego de Adventure', descriptor:'de exploración y descubrimiento' },
+  simulator:    { name:'Simulator', descriptor:'de progresión constante y coleccionable' },
+  minigames:    { name:'juego de Minigames', descriptor:'con rondas rápidas y variadas' },
+  racing:       { name:'juego de Racing', descriptor:'de velocidad y competencia' },
+  puzzle:       { name:'juego de Puzzle', descriptor:'de lógica y resolución de acertijos' },
+  dopamine:     { name:'juego de progresión rápida (Dopamine)', descriptor:'diseñado para dar recompensas rápidas y muy satisfactorias' }
+};
+
+// ---------- Selector de categoría (paso 1) ----------
+const categoryPicker = {
+  question: "¿Qué tipo de juego quieres crear?",
+  options: [
+    { id:'obby', label:'Obby', emoji:'🏃', node: obbyRoot },
+    { id:'rng', label:'RNG', emoji:'🎲', node: rngRoot },
+    { id:'funny', label:'Funny / Meme', emoji:'😂', node: funnyRoot },
+    { id:'tycoon', label:'Tycoon', emoji:'🧠', node: tycoonRoot },
+    { id:'battleroyale', label:'Battle Royale', emoji:'⚔️', node: battleRoyaleRoot },
+    { id:'horror', label:'Horror', emoji:'👻', node: horrorRoot },
+    { id:'survival', label:'Survival', emoji:'🧟', node: survivalRoot },
+    { id:'fighting', label:'Fighting', emoji:'🥊', node: fightingRoot },
+    { id:'adventure', label:'Adventure', emoji:'🏝️', node: adventureRoot },
+    { id:'simulator', label:'Simulator', emoji:'💰', node: simulatorRoot },
+    { id:'minigames', label:'Minigames', emoji:'🎯', node: minigamesRoot },
+    { id:'racing', label:'Racing', emoji:'🏎️', node: racingRoot },
+    { id:'puzzle', label:'Puzzle', emoji:'🧩', node: puzzleRoot },
+    { id:'dopamine', label:'Dopamine / Fast Progression', emoji:'🔥', node: dopamineRoot }
+  ]
+};
+
+/* =========================================================
+   ESTADO DE LA APLICACIÓN
+   ========================================================= */
+const state = {
+  node: categoryPicker,
+  path: [],
+  history: [],
+  inCommon: false,
+  categoryId: null
+};
+
+// ---------- Utilidades de DOM ----------
+function $(id){ return document.getElementById(id); }
+const screens = {
+  intro: $('screen-intro'),
+  wizard: $('screen-wizard'),
+  result: $('screen-result')
+};
+
+function showScreen(name){
+  Object.keys(screens).forEach(function(k){ screens[k].classList.remove('active'); });
+  screens[name].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+// ---------- Estimación de profundidad para la barra de progreso ----------
+function estimateDepth(node){
+  if(!node || !node.options || !node.options.length) return 0;
+  let withNode = null;
+  for(let i=0;i<node.options.length;i++){
+    if(node.options[i].node){ withNode = node.options[i]; break; }
+  }
+  if(!withNode) return 1;
+  return 1 + estimateDepth(withNode.node);
+}
+
+function updateProgress(){
+  const commonExtra = state.inCommon ? 0 : 2;
+  const total = state.path.length + 1 + estimateDepth(state.node) + commonExtra;
+  const current = state.path.length + 1;
+  $('stepCurrent').textContent = current;
+  $('stepTotal').textContent = total;
+  const pct = Math.min(100, Math.round((current / total) * 100));
+  $('progressFill').style.width = pct + '%';
+  $('stepPercent').textContent = pct + '%';
+}
+
+function renderCrumbs(){
+  const wrap = $('crumbs');
+  wrap.innerHTML = '';
+  state.path.forEach(function(p){
+    const c = document.createElement('div');
+    c.className = 'crumb';
+    c.textContent = p.emoji + ' ' + p.label;
+    wrap.appendChild(c);
+  });
+}
+
+// ---------- Render del paso actual del wizard ----------
+function renderWizardStep(){
+  showScreen('wizard');
+  updateProgress();
+  renderCrumbs();
+
+  $('questionText').textContent = state.node.question;
+
+  const grid = $('optionsGrid');
+  grid.innerHTML = '';
+  state.node.options.forEach(function(opt, i){
+    const btn = document.createElement('button');
+    btn.className = 'opt-card';
+    btn.style.animationDelay = (i * 0.04) + 's';
+    btn.innerHTML = '<span class="opt-emoji">' + opt.emoji + '</span><span class="opt-label">' + opt.label + '</span>';
+    btn.addEventListener('click', function(){ selectOption(opt); });
+    grid.appendChild(btn);
+  });
+
+  $('btnAtras').disabled = state.history.length === 0;
+  $('btnAtras').style.opacity = state.history.length === 0 ? '0.4' : '1';
+}
+
+// ---------- Selección de una opción ----------
+function selectOption(opt){
+  state.history.push({
+    node: state.node,
+    inCommon: state.inCommon,
+    categoryId: state.categoryId
+  });
+
+  if(state.node === categoryPicker){
+    state.categoryId = opt.id;
+  }
+
+  state.path.push({ question: state.node.question, label: opt.label, emoji: opt.emoji });
+
+  if(opt.node){
+    state.node = opt.node;
+    renderWizardStep();
+  } else if(!state.inCommon){
+    state.inCommon = true;
+    state.node = commonStyle;
+    renderWizardStep();
+  } else {
+    finalizeGame();
+  }
+}
+
+// ---------- Volver atrás ----------
+function goBack(){
+  if(state.history.length === 0) return;
+  const prev = state.history.pop();
+  state.path.pop();
+  state.node = prev.node;
+  state.inCommon = prev.inCommon;
+  state.categoryId = prev.categoryId;
+  renderWizardStep();
+}
+
+// ---------- Reinicio total ----------
+function resetAll(){
+  state.node = categoryPicker;
+  state.path = [];
+  state.history = [];
+  state.inCommon = false;
+  state.categoryId = null;
+  showScreen('intro');
+}
+
+// ---------- Generar concepto automático ----------
+function generateConcept(){
+  const meta = CATEGORY_META[state.categoryId] || { name:'juego', descriptor:'con una idea muy original' };
+  const n = state.path.length;
+  const styleChoice = state.path[n - 2] ? state.path[n - 2].label.toLowerCase() : 'personalizado';
+  const monetizationChoice = state.path[n - 1] ? state.path[n - 1].label.toLowerCase() : 'gamepasses';
+  const middle = state.path.slice(1, n - 2).map(function(p){ return p.label; });
+  const middleText = middle.length ? middle.join(', ') : 'varios sistemas personalizados';
+
+  return 'Tu juego será un ' + meta.name + ' ' + meta.descriptor + '. Incluirá ' + middleText + ', todo presentado con un estilo visual ' + styleChoice + ' y un modelo de monetización basado en ' + monetizationChoice + '. Una combinación con mucho potencial para triunfar en Roblox. 🚀';
+}
+
+// ---------- Finalizar y mostrar resultado ----------
+function finalizeGame(){
+  const summaryList = $('summaryList');
+  summaryList.innerHTML = '';
+  state.path.forEach(function(p){
+    const row = document.createElement('div');
+    row.className = 'summary-item';
+    row.innerHTML = '<span class="q">' + p.question + '</span><span class="a">' + p.emoji + ' ' + p.label + '</span>';
+    summaryList.appendChild(row);
+  });
+
+  $('conceptText').textContent = generateConcept();
+  showScreen('result');
+}
+
+// ---------- Exportar: texto plano ----------
+function buildExportText(){
+  const lines = [];
+  lines.push('🎮 ROBLOX GAME IDEA LAB — Resumen de tu juego');
+  lines.push('');
+  state.path.forEach(function(p){
+    lines.push(p.question);
+    lines.push('→ ' + p.emoji + ' ' + p.label);
+    lines.push('');
+  });
+  lines.push('💡 CONCEPTO:');
+  lines.push($('conceptText').textContent);
+  lines.push('');
+  lines.push('Generado con ROBLOX GAME IDEA LAB');
+  lines.push('Hecho por: @kawasakii en TikTok · bloxguy_TK en YouTube · Discord: kawasakii');
+  return lines.join('\n');
+}
+
+// ---------- Sorpréndeme: recorrido aleatorio del árbol ----------
+function surpriseMe(){
+  resetAll();
+
+  let node = categoryPicker;
+  let inCommon = false;
+  let categoryId = null;
+  const path = [];
+
+  while(true){
+    const options = node.options;
+    const opt = options[Math.floor(Math.random() * options.length)];
+
+    if(node === categoryPicker){ categoryId = opt.id; }
+    path.push({ question: node.question, label: opt.label, emoji: opt.emoji });
+
+    if(opt.node){
+      node = opt.node;
+    } else if(!inCommon){
+      inCommon = true;
+      node = commonStyle;
+    } else {
+      break;
+    }
+  }
+
+  state.path = path;
+  state.categoryId = categoryId;
+  state.node = node;
+  state.inCommon = inCommon;
+
+  finalizeGame();
+  toast('🎲 Combinación sorpresa generada');
+}
+
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+$('btnEmpezar').addEventListener('click', function(){
+  state.node = categoryPicker;
+  state.path = [];
+  state.history = [];
+  state.inCommon = false;
+  state.categoryId = null;
+  renderWizardStep();
+});
+
+$('btnSorpresa').addEventListener('click', surpriseMe);
+$('btnAtras').addEventListener('click', goBack);
+$('btnReiniciarWizard').addEventListener('click', resetAll);
+$('btnResetTop').addEventListener('click', resetAll);
+$('btnOtroJuego').addEventListener('click', resetAll);
+
+$('btnCopiar').addEventListener('click', function(){
+  const text = buildExportText();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(function(){ toast('✅ Copiado al portapapeles'); })
+      .catch(function(){ fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
+});
+
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); toast('✅ Copiado al portapapeles'); }
+  catch(e){ toast('⚠️ No se pudo copiar automáticamente'); }
+  document.body.removeChild(ta);
+}
+
+$('btnDescargar').addEventListener('click', function(){
+  const text = buildExportText();
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'roblox-game-idea.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('📄 Archivo descargado');
+});
+
+</script>
+</body>
+</html>
+
