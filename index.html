@@ -330,6 +330,25 @@
     color: #e6eeff;
   }
 
+  .game-name{
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 14px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .tips-list{
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #dbe6ff;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
   .result-actions{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top: 6px; }
 
   /* ---------- Toast ---------- */
@@ -411,8 +430,8 @@
 
     <div class="stats-row">
       <div class="stat"><b>14</b><span>géneros disponibles</span></div>
-      <div class="stat"><b>100+</b><span>combinaciones posibles</span></div>
-      <div class="stat"><b>0</b><span>líneas de código necesarias</span></div>
+      <div class="stat"><b>500+</b><span>combinaciones posibles</span></div>
+      <div class="stat"><b>6-8</b><span>decisiones por juego</span></div>
     </div>
   </section>
 
@@ -453,6 +472,17 @@
       <p class="concept-text" id="conceptText"></p>
     </div>
 
+    <div class="panel">
+      <h3>🏷️ Nombre sugerido</h3>
+      <p class="game-name" id="gameName"></p>
+      <button class="btn-ghost btn-small" id="btnRerollName">🎲 Generar otro nombre</button>
+    </div>
+
+    <div class="panel">
+      <h3>🛠️ Primeros pasos para desarrollarlo</h3>
+      <ul class="tips-list" id="tipsList"></ul>
+    </div>
+
     <div class="result-actions">
       <button class="btn-primary btn-small" id="btnCopiar">📋 COPIAR</button>
       <button class="btn-magic btn-small" id="btnDescargar">📄 DESCARGAR</button>
@@ -478,7 +508,7 @@
    ya estábamos en la cadena común, se finaliza el juego.
    ========================================================= */
 
-// ---------- Cadena común (estilo visual + monetización) ----------
+// ---------- Cadena común (estilo visual + GUI + público + social + monetización) ----------
 const commonMonetization = {
   question: "¿Cómo planeas monetizar tu juego?",
   options: [
@@ -490,14 +520,46 @@ const commonMonetization = {
   ]
 };
 
+const commonSocial = {
+  question: "¿Qué sistema social quieres incluir?",
+  options: [
+    { id:'amigostrading', label:'Amigos y trading', emoji:'🤝', node: commonMonetization },
+    { id:'clanes', label:'Clanes / Guilds', emoji:'🏰', node: commonMonetization },
+    { id:'chatemotes', label:'Chat con emotes', emoji:'💬', node: commonMonetization },
+    { id:'coop', label:'Co-op en equipo', emoji:'👥', node: commonMonetization },
+    { id:'sinsocial', label:'Sin sistema social (solo)', emoji:'🧍', node: commonMonetization }
+  ]
+};
+
+const commonAudience = {
+  question: "¿A qué público está dirigido tu juego?",
+  options: [
+    { id:'ninos', label:'Niños (todas las edades)', emoji:'🧒', node: commonSocial },
+    { id:'adolescentes', label:'Adolescentes', emoji:'🧑', node: commonSocial },
+    { id:'hardcore', label:'Jugadores hardcore', emoji:'🎯', node: commonSocial },
+    { id:'casual', label:'Casual para todos', emoji:'🌍', node: commonSocial }
+  ]
+};
+
+const commonGUI = {
+  question: "¿Qué estilo de interfaz (GUI) quieres para tu juego?",
+  options: [
+    { id:'guiminimal', label:'Minimalista y limpia', emoji:'🧼', node: commonAudience },
+    { id:'guicolorida', label:'Colorida y animada', emoji:'🎨', node: commonAudience },
+    { id:'guihud', label:'Estilo HUD gamer', emoji:'🎮', node: commonAudience },
+    { id:'gui3d', label:'Iconos 3D e interactivos', emoji:'🧊', node: commonAudience },
+    { id:'guiretro', label:'Retro / Pixel UI', emoji:'👾', node: commonAudience }
+  ]
+};
+
 const commonStyle = {
   question: "¿Qué estilo visual tendrá tu juego?",
   options: [
-    { id:'lowpoly', label:'Low-poly tierno', emoji:'🟢', node: commonMonetization },
-    { id:'realista', label:'Realista y oscuro', emoji:'🌑', node: commonMonetization },
-    { id:'cartoon', label:'Cartoon colorido', emoji:'🌈', node: commonMonetization },
-    { id:'minimal', label:'Minimalista', emoji:'⚪', node: commonMonetization },
-    { id:'retro', label:'Pixelado retro', emoji:'👾', node: commonMonetization }
+    { id:'lowpoly', label:'Low-poly tierno', emoji:'🟢', node: commonGUI },
+    { id:'realista', label:'Realista y oscuro', emoji:'🌑', node: commonGUI },
+    { id:'cartoon', label:'Cartoon colorido', emoji:'🌈', node: commonGUI },
+    { id:'minimal', label:'Minimalista', emoji:'⚪', node: commonGUI },
+    { id:'retro', label:'Pixelado retro', emoji:'👾', node: commonGUI }
   ]
 };
 
@@ -793,21 +855,159 @@ const dopamineRoot = simpleCategory(
 
 // ---------- Metadata para el generador de conceptos ----------
 const CATEGORY_META = {
-  obby:         { name:'Obby', descriptor:'enfocado en superar obstáculos y desafíos de plataformas' },
-  rng:          { name:'RNG', descriptor:'basado en rolls y en coleccionar objetos raros' },
-  funny:        { name:'juego de humor / meme', descriptor:'lleno de caos y momentos absurdos para hacer reír a los jugadores' },
-  tycoon:       { name:'Tycoon', descriptor:'centrado en construir y hacer crecer un imperio' },
-  battleroyale: { name:'Battle Royale', descriptor:'de combate donde solo un jugador puede ganar' },
-  horror:       { name:'juego de Horror', descriptor:'diseñado para asustar y generar tensión constante' },
-  survival:     { name:'juego de Survival', descriptor:'centrado en sobrevivir contra todo pronóstico' },
-  fighting:     { name:'juego de Fighting', descriptor:'de combate directo entre jugadores' },
-  adventure:    { name:'juego de Adventure', descriptor:'de exploración y descubrimiento' },
-  simulator:    { name:'Simulator', descriptor:'de progresión constante y coleccionable' },
-  minigames:    { name:'juego de Minigames', descriptor:'con rondas rápidas y variadas' },
-  racing:       { name:'juego de Racing', descriptor:'de velocidad y competencia' },
-  puzzle:       { name:'juego de Puzzle', descriptor:'de lógica y resolución de acertijos' },
-  dopamine:     { name:'juego de progresión rápida (Dopamine)', descriptor:'diseñado para dar recompensas rápidas y muy satisfactorias' }
+  obby: {
+    name:'Obby', shortName:'Obby',
+    descriptor:'enfocado en superar obstáculos y desafíos de plataformas',
+    tips: [
+      'Diseña primero 5-10 etapas de prueba con dificultad progresiva.',
+      'Usa CollectionService para gestionar checkpoints fácilmente.',
+      'Agrega guardado de progreso con DataStoreService desde el día 1.',
+      'Prueba el tiempo de finalización con testers reales antes de lanzar.'
+    ]
+  },
+  rng: {
+    name:'RNG', shortName:'RNG',
+    descriptor:'basado en rolls y en coleccionar objetos raros',
+    tips: [
+      'Define una tabla de probabilidades (weighted table) para las rarezas.',
+      'Crea una animación de roll que genere expectativa y suspenso.',
+      'Balancea bien el luck system para que no rompa la economía.',
+      'Implementa un leaderboard con los rolls más raros obtenidos.'
+    ]
+  },
+  funny: {
+    name:'juego de humor / meme', shortName:'Meme World',
+    descriptor:'lleno de caos y momentos absurdos para hacer reír a los jugadores',
+    tips: [
+      'Prototipa rápido: el humor se prueba mejor jugando con amigos.',
+      'Usa físicas de ragdoll para generar momentos graciosos naturales.',
+      'Agrega sonidos exagerados, potencian mucho el factor cómico.',
+      'Deja espacio para eventos random que sorprendan al jugador.'
+    ]
+  },
+  tycoon: {
+    name:'Tycoon', shortName:'Tycoon',
+    descriptor:'centrado en construir y hacer crecer un imperio',
+    tips: [
+      'Empieza con una base pequeña y escala con upgrades progresivos.',
+      'Usa ProximityPrompt para los botones de compra/dinero.',
+      'Balancea el ritmo de progreso: ni muy lento ni muy rápido.',
+      'Agrega un sistema de rebirth para darle vida a largo plazo.'
+    ]
+  },
+  battleroyale: {
+    name:'Battle Royale', shortName:'Battle Royale',
+    descriptor:'de combate donde solo un jugador puede ganar',
+    tips: [
+      'Optimiza el mapa: el rendimiento es clave con muchos jugadores.',
+      'Balancea el loot para que ningún arma sea claramente superior.',
+      'Implementa la zona reducible con un script simple de shrinking circle.',
+      'Prueba el matchmaking con al menos 10-20 jugadores simultáneos.'
+    ]
+  },
+  horror: {
+    name:'juego de Horror', shortName:'Horror Nights',
+    descriptor:'diseñado para asustar y generar tensión constante',
+    tips: [
+      'El sonido ambiental es tan importante como los gráficos.',
+      'No abuses de los jumpscares, la tensión constante funciona mejor.',
+      'Usa iluminación dinámica para reforzar la atmósfera.',
+      'Prueba el juego a oscuras y con audífonos antes de lanzar.'
+    ]
+  },
+  survival: {
+    name:'juego de Survival', shortName:'Survival',
+    descriptor:'centrado en sobrevivir contra todo pronóstico',
+    tips: [
+      'Balancea la velocidad de hambre/sed para no frustrar al jugador.',
+      'Implementa un ciclo día/noche que afecte la dificultad.',
+      'El crafting debe ser simple al inicio y complejo más adelante.',
+      'Agrega recursos limitados para fomentar la exploración.'
+    ]
+  },
+  fighting: {
+    name:'juego de Fighting', shortName:'Fighters',
+    descriptor:'de combate directo entre jugadores',
+    tips: [
+      'Los controles deben sentirse responsivos, prioriza la latencia baja.',
+      'Balancea el daño y cooldowns de cada personaje o poder.',
+      'Un sistema de ranked bien hecho aumenta mucho la retención.',
+      'Prueba el combate 1v1 antes de escalar a modos por equipos.'
+    ]
+  },
+  adventure: {
+    name:'juego de Adventure', shortName:'Adventure',
+    descriptor:'de exploración y descubrimiento',
+    tips: [
+      'Diseña un mundo con puntos de interés claros para guiar al jugador.',
+      'Las misiones cortas y variadas mantienen el interés más tiempo.',
+      'Agrega recompensas visibles por explorar zonas ocultas.',
+      'Un buen sistema de niveles motiva el progreso a largo plazo.'
+    ]
+  },
+  simulator: {
+    name:'Simulator', shortName:'Simulator',
+    descriptor:'de progresión constante y coleccionable',
+    tips: [
+      'El bucle de progreso (grind-recompensa) debe sentirse satisfactorio.',
+      'Los rebirths deben dar una mejora notable, no solo cosmética.',
+      'Las pets o ayudantes generan mucho enganche si se coleccionan.',
+      'Añade eventos temporales para mantener el juego activo.'
+    ]
+  },
+  minigames: {
+    name:'juego de Minigames', shortName:'Minigames',
+    descriptor:'con rondas rápidas y variadas',
+    tips: [
+      'Ten al menos 5-6 minijuegos listos antes del lanzamiento.',
+      'Las rondas cortas (1-3 min) mantienen la energía alta.',
+      'Un sistema de votación justo evita que se repita el mismo juego.',
+      'Los power-ups sorpresa agregan variedad a cada partida.'
+    ]
+  },
+  racing: {
+    name:'juego de Racing', shortName:'Racing',
+    descriptor:'de velocidad y competencia',
+    tips: [
+      'El control del vehículo debe sentirse fluido desde el primer intento.',
+      'Balancea las mejoras para que no haya un vehículo "imbatible".',
+      'Circuitos cortos y variados funcionan mejor que uno muy largo.',
+      'Agrega un modo contrarreloj para jugadores que van solos.'
+    ]
+  },
+  puzzle: {
+    name:'juego de Puzzle', shortName:'Puzzle',
+    descriptor:'de lógica y resolución de acertijos',
+    tips: [
+      'La curva de dificultad debe crecer poco a poco, sin saltos bruscos.',
+      'Un buen sistema de pistas evita que el jugador se frustre y se vaya.',
+      'Prueba cada puzzle con jugadores nuevos, no solo contigo mismo.',
+      'Los tiempos/rankings agregan rejugabilidad al modo puzzle.'
+    ]
+  },
+  dopamine: {
+    name:'juego de progresión rápida (Dopamine)', shortName:'Rush',
+    descriptor:'diseñado para dar recompensas rápidas y muy satisfactorias',
+    tips: [
+      'Cada acción del jugador debe tener feedback visual o sonoro inmediato.',
+      'Los números creciendo rápido generan sensación de progreso constante.',
+      'No abuses de los efectos, deben sorprender sin saturar la pantalla.',
+      'Combina recompensas pequeñas y frecuentes con una grande ocasional.'
+    ]
+  }
 };
+
+// ---------- Generador de nombres sugeridos ----------
+const NAME_PREFIXES = ['Mega','Super','Ultra','Epic','Galactic','Chaos','Neon','Turbo','Legendary','Wild','Infinite','Prime'];
+const NAME_SUFFIXES = ['Legends','Rush','Unleashed','Infinity','Royale','Saga','Empire','2.0','Prime','Chaos Mode','Reborn','Simulator X'];
+
+function generateGameName(categoryId){
+  const meta = CATEGORY_META[categoryId] || {};
+  const short = meta.shortName || 'Roblox Game';
+  const prefix = NAME_PREFIXES[Math.floor(Math.random() * NAME_PREFIXES.length)];
+  const suffix = NAME_SUFFIXES[Math.floor(Math.random() * NAME_SUFFIXES.length)];
+  return prefix + ' ' + short + ': ' + suffix;
+}
 
 // ---------- Selector de categoría (paso 1) ----------
 const categoryPicker = {
@@ -838,7 +1038,8 @@ const state = {
   path: [],
   history: [],
   inCommon: false,
-  categoryId: null
+  categoryId: null,
+  gameName: ''
 };
 
 // ---------- Utilidades de DOM ----------
@@ -963,19 +1164,33 @@ function resetAll(){
   state.history = [];
   state.inCommon = false;
   state.categoryId = null;
+  state.gameName = '';
   showScreen('intro');
 }
 
 // ---------- Generar concepto automático ----------
+// Los últimos 5 elementos del path siempre son la cadena común:
+// [estilo visual, GUI, público objetivo, sistema social, monetización]
 function generateConcept(){
   const meta = CATEGORY_META[state.categoryId] || { name:'juego', descriptor:'con una idea muy original' };
   const n = state.path.length;
-  const styleChoice = state.path[n - 2] ? state.path[n - 2].label.toLowerCase() : 'personalizado';
+
+  const styleChoice = state.path[n - 5] ? state.path[n - 5].label.toLowerCase() : 'personalizado';
+  const guiChoice = state.path[n - 4] ? state.path[n - 4].label.toLowerCase() : 'sencilla';
+  const audienceChoice = state.path[n - 3] ? state.path[n - 3].label.toLowerCase() : 'todo público';
+  const socialChoice = state.path[n - 2] ? state.path[n - 2].label.toLowerCase() : 'chat básico';
   const monetizationChoice = state.path[n - 1] ? state.path[n - 1].label.toLowerCase() : 'gamepasses';
-  const middle = state.path.slice(1, n - 2).map(function(p){ return p.label; });
+
+  const middle = state.path.slice(1, n - 5).map(function(p){ return p.label; });
   const middleText = middle.length ? middle.join(', ') : 'varios sistemas personalizados';
 
-  return 'Tu juego será un ' + meta.name + ' ' + meta.descriptor + '. Incluirá ' + middleText + ', todo presentado con un estilo visual ' + styleChoice + ' y un modelo de monetización basado en ' + monetizationChoice + '. Una combinación con mucho potencial para triunfar en Roblox. 🚀';
+  return 'Tu juego será un ' + meta.name + ' ' + meta.descriptor + '. Incluirá ' + middleText +
+    ', lo que le dará una jugabilidad única y adictiva. ' +
+    'Visualmente tendrá un estilo ' + styleChoice + ', complementado con una interfaz (GUI) ' + guiChoice +
+    ' que hará la experiencia más inmersiva. Está pensado para un público ' + audienceChoice +
+    ', e incorporará un sistema social basado en ' + socialChoice + ' para fomentar la comunidad. ' +
+    'Finalmente, su monetización se basará en ' + monetizationChoice + ', asegurando ingresos sin afectar la experiencia de juego. ' +
+    '¡Un concepto sólido y completo, listo para desarrollarse en Roblox Studio! 🚀🎮';
 }
 
 // ---------- Finalizar y mostrar resultado ----------
@@ -990,6 +1205,19 @@ function finalizeGame(){
   });
 
   $('conceptText').textContent = generateConcept();
+
+  state.gameName = generateGameName(state.categoryId);
+  $('gameName').textContent = state.gameName;
+
+  const meta = CATEGORY_META[state.categoryId] || { tips: [] };
+  const tipsList = $('tipsList');
+  tipsList.innerHTML = '';
+  (meta.tips || []).forEach(function(tip){
+    const li = document.createElement('li');
+    li.textContent = tip;
+    tipsList.appendChild(li);
+  });
+
   showScreen('result');
 }
 
@@ -997,6 +1225,8 @@ function finalizeGame(){
 function buildExportText(){
   const lines = [];
   lines.push('🎮 ROBLOX GAME IDEA LAB — Resumen de tu juego');
+  lines.push('');
+  lines.push('🏷️ NOMBRE SUGERIDO: ' + (state.gameName || generateGameName(state.categoryId)));
   lines.push('');
   state.path.forEach(function(p){
     lines.push(p.question);
@@ -1006,6 +1236,14 @@ function buildExportText(){
   lines.push('💡 CONCEPTO:');
   lines.push($('conceptText').textContent);
   lines.push('');
+
+  const meta = CATEGORY_META[state.categoryId] || { tips: [] };
+  if(meta.tips && meta.tips.length){
+    lines.push('🛠️ PRIMEROS PASOS PARA DESARROLLARLO:');
+    meta.tips.forEach(function(tip){ lines.push('- ' + tip); });
+    lines.push('');
+  }
+
   lines.push('Generado con ROBLOX GAME IDEA LAB');
   lines.push('Hecho por: @kawasakii en TikTok · bloxguy_TK en YouTube · Discord: kawasakii');
   return lines.join('\n');
@@ -1064,6 +1302,12 @@ $('btnReiniciarWizard').addEventListener('click', resetAll);
 $('btnResetTop').addEventListener('click', resetAll);
 $('btnOtroJuego').addEventListener('click', resetAll);
 
+$('btnRerollName').addEventListener('click', function(){
+  state.gameName = generateGameName(state.categoryId);
+  $('gameName').textContent = state.gameName;
+  toast('🎲 Nuevo nombre generado');
+});
+
 $('btnCopiar').addEventListener('click', function(){
   const text = buildExportText();
   if(navigator.clipboard && navigator.clipboard.writeText){
@@ -1104,4 +1348,3 @@ $('btnDescargar').addEventListener('click', function(){
 </script>
 </body>
 </html>
-
